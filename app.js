@@ -3,8 +3,16 @@ var app = express();
 
 var http = require('http');
 
-function filterFeed(feed) {
-  // TODO filtering
+function filterFeed(feed, threshold) {
+  feed = feed.replace(/(<title>[\s\S]*?)250(<\/title>)/, '$1' + threshold + '$2');
+  feed = feed.replace(/(<description>[\s\S]*?)250(<\/description>)/, '$1' + threshold + '$2');
+  feed = feed.replace(/<item>[\s\S]*?<dirty:rating>([\s\S]*?)<\/dirty:rating>[\s\S]*?<\/item>/g, function(match, p1) {
+    if (parseInt(p1) > threshold) {
+      return match;
+    } else {
+      return '';
+    }
+  });
   return feed;
 }
 
@@ -12,7 +20,7 @@ app.get('/', function(req, res) {
   res.send('d3feed');
 });
 
-app.get('/over/:num([0-9]+)', function(req, res) {
+app.get('/over/:threshold([0-9]+)', function(req, res) {
   var options = {
     host: 'dirty.ru',
     port: 80,
@@ -42,7 +50,7 @@ app.get('/over/:num([0-9]+)', function(req, res) {
         body = buffer.join('');
       }
 
-      body = filterFeed(body);
+      body = filterFeed(body, req.params.threshold);
 
       res.header('Content-Type', 'text/xml; charset=utf-8');
       res.write(body);
