@@ -52,7 +52,8 @@ app.get('/over/:threshold([0-9]+)', function(req, res) {
 
       body = filterFeed(body, req.params.threshold);
 
-      res.header('Content-Type', 'text/xml; charset=utf-8');
+      res.header('Content-Type', innerRes.headers['content-type']);
+      res.header('Last-Modified', innerRes.headers['last-modified']);
       res.write(body);
       res.end();
     });
