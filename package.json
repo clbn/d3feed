@@ -1,15 +1,12 @@
 {
   "name": "d3feed",
-  "version": "0.0.1-5",
+  "version": "0.0.1-6",
   "private": true,
   "subdomain": "d3feed",
   "scripts": {
     "start": "app.js"
   },
   "dependencies": {
-    "express": ">=2.5"
-  },
-  "engines": {
-    "node": ">=0.6"
+    "express": "3.3.4"
   }
 }
