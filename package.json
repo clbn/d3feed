@@ -1,8 +1,6 @@
 {
   "name": "d3feed",
-  "version": "0.0.1-6",
-  "private": true,
-  "subdomain": "d3feed",
+  "version": "0.0.1-7",
   "scripts": {
     "start": "app.js"
   },
