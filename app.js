@@ -1,19 +1,36 @@
+var request = require('request');
+var cheerio = require('cheerio');
 var express = require('express');
 var app = express();
 
-var http = require('http');
+function parsePage(html, threshold) {
+  var $ = cheerio.load(html);
+  var posts = [];
 
-function filterFeed(feed, threshold) {
-  feed = feed.replace(/(<title>[\s\S]*?)250(<\/title>)/, '$1' + threshold + '$2');
-  feed = feed.replace(/(<description>[\s\S]*?)250(<\/description>)/, '$1' + threshold + '$2');
-  feed = feed.replace(/<item>[\s\S]*?<dirty:rating>([\s\S]*?)<\/dirty:rating>[\s\S]*?<\/item>/g, function(match, p1) {
-    if (parseInt(p1) > threshold) {
-      return match;
-    } else {
-      return '';
+  $('div.post').each(function() {
+    var post = {};
+
+    var votesCount = $(this).find('.vote_result').text();
+    votesCount = parseInt(votesCount, 10);
+
+    if (votesCount > threshold) {
+      post.votesCount = votesCount;
+
+      post.title = $(this).find('h3').text().trim();
+
+      post.externalLink = $(this).find('h3 a').attr('href');
+      post.commentsLink = $(this).find('.b-post_comments_links a').attr('href');
+
+      post.body = $(this).find('.post_body').html();
+      if (post.body !== null) {
+        post.body = post.body.trim();
+      }
+
+      posts.push(post);
     }
   });
-  return feed;
+
+  return posts;
 }
 
 app.get('/', function(req, res) {
@@ -21,45 +38,14 @@ app.get('/', function(req, res) {
 });
 
 app.get('/over/:threshold([0-9]+)', function(req, res) {
-  var options = {
-    host: 'dirty.ru',
-    port: 80,
-    path: '/rss_7.xml'
-  };
+  var threshold = parseInt(req.params.threshold, 10);
+  console.log('Get posts with threshold ' + threshold + ': start...');
 
-  http.get(options, function(innerRes) {
-    var buffer = [];
-    var bodyLength = 0;
-
-    innerRes.on('data', function(chunk) {
-      buffer.push(chunk);
-      bodyLength += chunk.length;
-    });
-
-    innerRes.on('end', function() {
-      var body;
-      if (buffer.length && Buffer.isBuffer(buffer[0])) {
-        body = new Buffer(bodyLength);
-        var offset = 0;
-        buffer.forEach(function (chunk) {
-          chunk.copy(body, offset, 0, chunk.length);
-          offset += chunk.length;
-        });
-        body = body.toString();
-      } else if (buffer.length) {
-        body = buffer.join('');
-      }
-
-      body = filterFeed(body, req.params.threshold);
-
-      res.header('Content-Type', innerRes.headers['content-type']);
-      res.header('Last-Modified', innerRes.headers['last-modified']);
-      res.write(body);
-      res.end();
-    });
-  }).on('error', function(e) {
-    console.log("Got error: " + e.message);
+  request('http://d3.ru/', function(err, response, body) {
+    var posts = parsePage(body, threshold);
+    console.log('Get posts with threshold ' + threshold + ': done.');
+    res.send(JSON.stringify(posts));
   });
 });
 
-app.listen(3000);
+app.listen(3013);
