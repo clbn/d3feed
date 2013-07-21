@@ -33,6 +33,38 @@ function parsePage(html, threshold) {
   return posts;
 }
 
+function composeFeed(posts) {
+  var items = [];
+  posts.forEach(function(post) {
+    items.push(
+      '<item>' +
+      '<title>' + post.title + '</title>' +
+      '<description>' + post.body + '</description>' +
+      '<link>' + post.commentsLink + '</link>' +
+      '<guid>' + post.commentsLink + '</guid>' +
+      '<pubDate>Mon, 06 Sep 2013 16:20:00 +0000</pubDate>' +
+      '</item>'
+    );
+  });
+  return '<?xml version="1.0" encoding="UTF-8" ?>\n' +
+    '<rss version="2.0"><channel>' +
+    '<title>RSS Title</title>' +
+    '<description>RSS feed</description>' +
+    '<link>http://d3.ru/</link>' +
+    '<lastBuildDate>Mon, 06 Sep 2013 00:01:00 +0000 </lastBuildDate>' +
+    '<pubDate>Mon, 06 Sep 2013 16:20:00 +0000 </pubDate>' +
+    '<ttl>3600</ttl>' +
+    items.join('') +
+    '</channel>' +
+    '</rss>';
+}
+
+function sendFeed(res, posts) {
+  var feed = composeFeed(posts);
+  res.setHeader('Content-Type', 'application/rss+xml');
+  res.send(feed);
+}
+
 app.get('/', function(req, res) {
   res.send('d3feed');
 });
@@ -44,7 +76,7 @@ app.get('/over/:threshold([0-9]+)', function(req, res) {
   request('http://d3.ru/', function(err, response, body) {
     var posts = parsePage(body, threshold);
     console.log('Get posts with threshold ' + threshold + ': done.');
-    res.send(JSON.stringify(posts));
+    sendFeed(res, posts);
   });
 });
 
