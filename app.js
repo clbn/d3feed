@@ -39,10 +39,10 @@ function composeFeed(posts) {
     items.push(
       '<item>' +
       '<title>' + post.title + '</title>' +
-      '<description>' + post.body + '</description>' +
+      '<description><![CDATA[' + post.body + ']]></description>' +
       '<link>' + post.commentsLink + '</link>' +
       '<guid>' + post.commentsLink + '</guid>' +
-      '<pubDate>Mon, 06 Sep 2013 16:20:00 +0000</pubDate>' +
+      '<pubDate>Sat, 10 Aug 2013 12:20:00 +0000</pubDate>' +
       '</item>'
     );
   });
@@ -51,8 +51,8 @@ function composeFeed(posts) {
     '<title>RSS Title</title>' +
     '<description>RSS feed</description>' +
     '<link>http://d3.ru/</link>' +
-    '<lastBuildDate>Mon, 06 Sep 2013 00:01:00 +0000 </lastBuildDate>' +
-    '<pubDate>Mon, 06 Sep 2013 16:20:00 +0000 </pubDate>' +
+    '<lastBuildDate>Sat, 10 Aug 2013 12:20:00 +0000</lastBuildDate>' +
+    '<pubDate>Sat, 10 Aug 2013 12:20:00 +0000</pubDate>' +
     '<ttl>3600</ttl>' +
     items.join('') +
     '</channel>' +
