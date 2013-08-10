@@ -33,7 +33,7 @@ function parsePage(html, threshold) {
   return posts;
 }
 
-function composeFeed(posts) {
+function composeFeed(posts, threshold) {
   var items = [];
   posts.forEach(function(post) {
     items.push(
@@ -47,7 +47,8 @@ function composeFeed(posts) {
     );
   });
   return '<?xml version="1.0" encoding="UTF-8" ?>\n' +
-    '<rss version="2.0"><channel>' +
+    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>' +
+    '<atom:link href="http://d3feed.ru/over/' + threshold + '" rel="self" type="application/rss+xml" />' +
     '<title>RSS Title</title>' +
     '<description>RSS feed</description>' +
     '<link>http://d3.ru/</link>' +
@@ -59,8 +60,8 @@ function composeFeed(posts) {
     '</rss>';
 }
 
-function sendFeed(res, posts) {
-  var feed = composeFeed(posts);
+function sendFeed(res, posts, threshold) {
+  var feed = composeFeed(posts, threshold);
   res.setHeader('Content-Type', 'application/rss+xml');
   res.send(feed);
 }
@@ -76,7 +77,7 @@ app.get('/over/:threshold([0-9]+)', function(req, res) {
   request('http://d3.ru/', function(err, response, body) {
     var posts = parsePage(body, threshold);
     console.log('Get posts with threshold ' + threshold + ': done.');
-    sendFeed(res, posts);
+    sendFeed(res, posts, threshold);
   });
 });
 
