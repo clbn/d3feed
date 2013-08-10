@@ -16,6 +16,11 @@ function parsePage(html, threshold) {
     if (votesCount > threshold) {
       post.votesCount = votesCount;
 
+      var timestamp = $(this).find('.js-date').attr('data-epoch_date');
+      timestamp = parseInt(timestamp, 10);
+      var date = new Date(timestamp * 1000);
+      post.pubDate = date.toUTCString();
+
       post.title = $(this).find('h3').text().trim();
 
       post.externalLink = $(this).find('h3 a').attr('href');
@@ -42,18 +47,22 @@ function composeFeed(posts, threshold) {
       '<description><![CDATA[' + post.body + ']]></description>' +
       '<link>' + post.commentsLink + '</link>' +
       '<guid>' + post.commentsLink + '</guid>' +
-      '<pubDate>Sat, 10 Aug 2013 12:20:00 +0000</pubDate>' +
+      '<pubDate>' + post.pubDate + '</pubDate>' +
       '</item>'
     );
   });
+
+  var date = new Date();
+  var pubDate = date.toUTCString();
+
   return '<?xml version="1.0" encoding="UTF-8" ?>\n' +
     '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>' +
     '<atom:link href="http://d3feed.ru/over/' + threshold + '" rel="self" type="application/rss+xml" />' +
-    '<title>RSS Title</title>' +
-    '<description>RSS feed</description>' +
+    '<title>d3.ru — посты с рейтингом выше ' + threshold + '</title>' +
+    '<description>80 лет в интернете</description>' +
     '<link>http://d3.ru/</link>' +
-    '<lastBuildDate>Sat, 10 Aug 2013 12:20:00 +0000</lastBuildDate>' +
-    '<pubDate>Sat, 10 Aug 2013 12:20:00 +0000</pubDate>' +
+    '<lastBuildDate>' + pubDate + '</lastBuildDate>' +
+    '<pubDate>' + pubDate + '</pubDate>' +
     '<ttl>3600</ttl>' +
     items.join('') +
     '</channel>' +
