@@ -5,8 +5,10 @@
     "start": "app.js"
   },
   "dependencies": {
-    "request": "2.22.0",
-    "cheerio": "0.12.0",
-    "express": "3.3.4"
+    "request": "2.26.0",
+    "cheerio": "0.12.1",
+    "express": "3.3.4",
+    "consolidate": "0.9.1",
+    "swig": "0.14.0"
   }
 }
