@@ -28,6 +28,7 @@ function parsePage(html, threshold) {
 
       post.body = $(this).find('.post_body').html();
       if (post.body !== null) {
+        post.body = post.body.replace(/<iframe[^>]+src="http:\/\/www\.youtube\.com\/embed\/(\w+)["\?][^<]+<\/iframe>/, '<a href="http://www.youtube.com/watch?v=$1"><img src="http://img.youtube.com/vi/$1/0.jpg"/></a>');
         post.body = post.body.trim();
       }
 
