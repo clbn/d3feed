@@ -68,8 +68,8 @@ function composeFeed(posts, threshold) {
   return '<?xml version="1.0" encoding="UTF-8" ?>\n' +
     '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>' +
     '<atom:link href="http://d3feed.ru/over/' + threshold + '" rel="self" type="application/rss+xml" />' +
-    '<title>d3.ru — посты с рейтингом выше ' + threshold + '</title>' +
-    '<description>80 лет в интернете</description>' +
+    '<title>d3.ru — больше ' + threshold + '</title>' +
+    '<description>Посты d3.ru с рейтингом выше ' + threshold + '</description>' +
     '<link>http://d3.ru/</link>' +
     '<lastBuildDate>' + pubDate + '</lastBuildDate>' +
     '<pubDate>' + pubDate + '</pubDate>' +
@@ -81,7 +81,7 @@ function composeFeed(posts, threshold) {
 
 function sendFeed(res, posts, threshold) {
   var feed = composeFeed(posts, threshold);
-  res.setHeader('Content-Type', 'application/rss+xml');
+  res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
   res.send(feed);
 }
 
