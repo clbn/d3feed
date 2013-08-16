@@ -1,14 +1,9 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var express = require('express');
-var consolidate = require('consolidate');
-var swig = require('swig');
 var path = require('path');
 
 var app = express();
-app.engine('html', consolidate.swig);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'html');
 app.use(express.compress());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -84,10 +79,6 @@ function sendFeed(res, posts, threshold) {
   res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
   res.send(feed);
 }
-
-app.get('/', function(req, res) {
-  res.render('index');
-});
 
 app.get('/over/:threshold([0-9]+)', function(req, res) {
   var threshold = parseInt(req.params.threshold, 10);
