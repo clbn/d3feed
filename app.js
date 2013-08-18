@@ -84,7 +84,16 @@ app.get('/over/:threshold([0-9]+)', function(req, res) {
   var threshold = parseInt(req.params.threshold, 10);
   console.log('Get posts with threshold ' + threshold + ': start...');
 
-  request('http://d3.ru/', function(err, response, body) {
+  var cookieThreshold = 0;
+  if (threshold >= 250) {
+    cookieThreshold = 250;
+  } else if (threshold >= 25) {
+    cookieThreshold = 25;
+  }
+  var cookieJar = request.jar();
+  cookieJar.add(request.cookie('new_threshold='+cookieThreshold));
+
+  request({url: 'http://d3.ru/new', jar: cookieJar}, function(err, response, body) {
     var posts = parsePage(body, threshold);
     console.log('Get posts with threshold ' + threshold + ': done.');
     sendFeed(res, posts, threshold);
